@@ -15,20 +15,18 @@
  */
 package roboguice.activity;
 
-import roboguice.activity.event.*;
-import roboguice.application.RoboApplication;
-import roboguice.event.EventManager;
-import roboguice.inject.ContextScope;
-import roboguice.inject.InjectorProvider;
-
 import android.app.ExpandableListActivity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-
 import com.google.inject.Injector;
+import roboguice.activity.event.*;
+import roboguice.application.RoboApplication;
+import roboguice.event.EventManager;
+import roboguice.inject.ContextScope;
+import roboguice.inject.InjectorProvider;
 
 /**
  * A {@link RoboExpandableListActivity} extends from
@@ -123,7 +121,7 @@ public class RoboExpandableListActivity extends ExpandableListActivity implement
     @Override
     protected void onDestroy() {
         eventManager.fire(new OnDestroyEvent());
-        eventManager.clear(this);
+        eventManager.clear();
         scope.exit(this);
         super.onDestroy();
     }

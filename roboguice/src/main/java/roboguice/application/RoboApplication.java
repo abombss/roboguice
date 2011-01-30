@@ -15,16 +15,16 @@
  */
 package roboguice.application;
 
-import roboguice.config.AbstractAndroidModule;
-import roboguice.config.RoboModule;
-import roboguice.event.EventManager;
-import roboguice.event.EventManager.NullEventManager;
-import roboguice.inject.*;
-
 import android.app.Application;
 import android.content.Context;
-
 import com.google.inject.*;
+import roboguice.config.AbstractAndroidModule;
+import roboguice.config.EventManagerModule;
+import roboguice.config.RoboModule;
+import roboguice.event.EventManager;
+import roboguice.event.EventManagerImpl;
+import roboguice.event.NoOpEventManagerImpl;
+import roboguice.inject.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +108,7 @@ public class RoboApplication extends Application implements InjectorProvider {
         resourceListener = new ResourceListener(this);
         viewListener = new ViewListener(contextProvider, this, contextScope);
         extrasListener = new ExtrasListener(contextProvider);
-        eventManager = allowContextObservers() ? new EventManager() : new NullEventManager();
+        eventManager = allowContextObservers() ? new EventManagerImpl() : new NoOpEventManagerImpl();
 
         if (allowPreferenceInjection())
           preferenceListener = new PreferenceListener(contextProvider, this, contextScope);
@@ -130,9 +130,12 @@ public class RoboApplication extends Application implements InjectorProvider {
     protected Injector createInjector() {
         ArrayList<Module> modules = new ArrayList<Module>();
         Module roboguiceModule = new RoboModule(contextScope, throwingContextProvider,
-                contextProvider, resourceListener, viewListener, extrasListener, preferenceListener,
-                eventManager, this);
+                contextProvider, resourceListener, viewListener, extrasListener, preferenceListener, this);
         modules.add(roboguiceModule);
+
+        Module eventManagerModule = new EventManagerModule(eventManager, contextProvider);
+        modules.add(eventManagerModule);
+        
         //context observer manager module
         addApplicationModules(modules);
         for (Module m : modules) {

@@ -15,20 +15,18 @@
  */
 package roboguice.activity;
 
-import roboguice.activity.event.*;
-import roboguice.application.RoboApplication;
-import roboguice.event.EventManager;
-import roboguice.inject.ContextScope;
-import roboguice.inject.InjectorProvider;
-
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-
 import com.google.android.maps.MapActivity;
 import com.google.inject.Injector;
+import roboguice.activity.event.*;
+import roboguice.application.RoboApplication;
+import roboguice.event.EventManager;
+import roboguice.inject.ContextScope;
+import roboguice.inject.InjectorProvider;
 
 /**
  * A {@link RoboMapActivity} extends from {@link MapActivity} to provide
@@ -122,7 +120,7 @@ public abstract class RoboMapActivity extends MapActivity implements InjectorPro
     @Override
     protected void onDestroy() {
         eventManager.fire(new OnDestroyEvent());
-        eventManager.clear(this);
+        eventManager.clear();
         scope.exit(this);
         super.onDestroy();
     }

@@ -15,20 +15,18 @@
  */
 package roboguice.activity;
 
-import roboguice.activity.event.*;
-import roboguice.application.RoboApplication;
-import roboguice.event.EventManager;
-import roboguice.inject.ContextScope;
-import roboguice.inject.InjectorProvider;
-
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-
 import com.google.inject.Injector;
+import roboguice.activity.event.*;
+import roboguice.application.RoboApplication;
+import roboguice.event.EventManager;
+import roboguice.inject.ContextScope;
+import roboguice.inject.InjectorProvider;
 
 /**
  * A {@link RoboListActivity} extends from {@link ListActivity} to provide
@@ -122,7 +120,7 @@ public class RoboListActivity extends ListActivity implements InjectorProvider {
     @Override
     protected void onDestroy() {
         eventManager.fire(new OnDestroyEvent());
-        eventManager.clear(this);
+        eventManager.clear();
         scope.exit(this);
         super.onDestroy();
     }
