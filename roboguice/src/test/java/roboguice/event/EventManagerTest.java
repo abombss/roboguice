@@ -27,7 +27,7 @@ public class EventManagerTest {
 
     @Before
     public void setup() throws NoSuchMethodException {
-        eventManager = new EventManagerImpl();
+        eventManager = new EventManager();
         context = EasyMock.createMock(Context.class);
         tester = new ContextObserverTesterImpl();
         eventOneMethods = ContextObserverTesterImpl.getMethods(EventOne.class);

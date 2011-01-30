@@ -22,8 +22,6 @@ import roboguice.config.AbstractAndroidModule;
 import roboguice.config.EventManagerModule;
 import roboguice.config.RoboModule;
 import roboguice.event.EventManager;
-import roboguice.event.EventManagerImpl;
-import roboguice.event.NoOpEventManagerImpl;
 import roboguice.inject.*;
 
 import java.util.ArrayList;
@@ -108,7 +106,7 @@ public class RoboApplication extends Application implements InjectorProvider {
         resourceListener = new ResourceListener(this);
         viewListener = new ViewListener(contextProvider, this, contextScope);
         extrasListener = new ExtrasListener(contextProvider);
-        eventManager = allowContextObservers() ? new EventManagerImpl() : new NoOpEventManagerImpl();
+        eventManager = allowContextObservers() ? new EventManager() : new EventManager.NullEventManager();
 
         if (allowPreferenceInjection())
           preferenceListener = new PreferenceListener(contextProvider, this, contextScope);

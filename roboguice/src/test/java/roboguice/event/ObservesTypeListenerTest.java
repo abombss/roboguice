@@ -32,7 +32,7 @@ public class ObservesTypeListenerTest {
             }
         };
 
-        Module eventManagerModule = new EventManagerModule(new EventManagerImpl(), contextProvider);
+        Module eventManagerModule = new EventManagerModule(new EventManager(), contextProvider);
 
         Module contextProviderModule = new AbstractModule() {
             public void configure() {

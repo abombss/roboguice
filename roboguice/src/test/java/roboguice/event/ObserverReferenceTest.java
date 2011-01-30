@@ -36,8 +36,8 @@ public class ObserverReferenceTest {
     @Test
     public void testEquality() {
 
-        EventManagerImpl.ObserverMethodListener<EqualityTestClass> observerRefOne = new EventManagerImpl.ObserverMethodListener<EqualityTestClass>(test, methodOne);
-        EventManagerImpl.ObserverMethodListener<EqualityTestClass> observerRefTwo = new EventManagerImpl.ObserverMethodListener<EqualityTestClass>(test, methodOneBase);
+        EventManager.ObserverMethodListener<EqualityTestClass> observerRefOne = new EventManager.ObserverMethodListener<EqualityTestClass>(test, methodOne);
+        EventManager.ObserverMethodListener<EqualityTestClass> observerRefTwo = new EventManager.ObserverMethodListener<EqualityTestClass>(test, methodOneBase);
 
         assertEquals(observerRefOne, observerRefTwo);
         assertEquals(observerRefOne.hashCode(), observerRefTwo.hashCode());
@@ -46,8 +46,8 @@ public class ObserverReferenceTest {
     @Test
     public void testEqualityOfSameGuts() {
 
-        EventManagerImpl.ObserverMethodListener<EqualityTestClass> observerRefOne = new EventManagerImpl.ObserverMethodListener<EqualityTestClass>(test, methodOne);
-        EventManagerImpl.ObserverMethodListener<EqualityTestClass> observerRefTwo = new EventManagerImpl.ObserverMethodListener<EqualityTestClass>(test, methodOne);
+        EventManager.ObserverMethodListener<EqualityTestClass> observerRefOne = new EventManager.ObserverMethodListener<EqualityTestClass>(test, methodOne);
+        EventManager.ObserverMethodListener<EqualityTestClass> observerRefTwo = new EventManager.ObserverMethodListener<EqualityTestClass>(test, methodOne);
 
         assertEquals(observerRefOne, observerRefTwo);
         assertEquals(observerRefOne.hashCode(), observerRefTwo.hashCode());
@@ -56,8 +56,8 @@ public class ObserverReferenceTest {
     @Test
     public void testInequalityBetweenSameClass() {
 
-        EventManagerImpl.ObserverMethodListener<EqualityTestClass> observerRefOne = new EventManagerImpl.ObserverMethodListener<EqualityTestClass>(test, methodOne);
-        EventManagerImpl.ObserverMethodListener<EqualityTestClass> observerRefTwo = new EventManagerImpl.ObserverMethodListener<EqualityTestClass>(test, methodTwo);
+        EventManager.ObserverMethodListener<EqualityTestClass> observerRefOne = new EventManager.ObserverMethodListener<EqualityTestClass>(test, methodOne);
+        EventManager.ObserverMethodListener<EqualityTestClass> observerRefTwo = new EventManager.ObserverMethodListener<EqualityTestClass>(test, methodTwo);
 
         assert !observerRefOne.equals(observerRefTwo) ;
         assert !Integer.valueOf(observerRefOne.hashCode()).equals(observerRefTwo.hashCode());
@@ -66,8 +66,8 @@ public class ObserverReferenceTest {
     @Test
     public void testInequalityBetweenDifferentClass() {
 
-        EventManagerImpl.ObserverMethodListener<EqualityTestClass> observerRefOne = new EventManagerImpl.ObserverMethodListener<EqualityTestClass>(test, methodOne);
-        EventManagerImpl.ObserverMethodListener<EqualityTestClass> observerRefTwo = new EventManagerImpl.ObserverMethodListener<EqualityTestClass>(test, methodTwoBase);
+        EventManager.ObserverMethodListener<EqualityTestClass> observerRefOne = new EventManager.ObserverMethodListener<EqualityTestClass>(test, methodOne);
+        EventManager.ObserverMethodListener<EqualityTestClass> observerRefTwo = new EventManager.ObserverMethodListener<EqualityTestClass>(test, methodTwoBase);
 
         assert !observerRefOne.equals(observerRefTwo) ;
         assert !Integer.valueOf(observerRefOne.hashCode()).equals(observerRefTwo.hashCode());
@@ -76,8 +76,8 @@ public class ObserverReferenceTest {
     @Test
     public void testInequalityBetweenDifferentInstances() {
 
-        EventManagerImpl.ObserverMethodListener<EqualityTestClass> observerRefOne = new EventManagerImpl.ObserverMethodListener<EqualityTestClass>(test, methodOne);
-        EventManagerImpl.ObserverMethodListener<EqualityTestClass> observerRefTwo = new EventManagerImpl.ObserverMethodListener<EqualityTestClass>(test2, methodOne);
+        EventManager.ObserverMethodListener<EqualityTestClass> observerRefOne = new EventManager.ObserverMethodListener<EqualityTestClass>(test, methodOne);
+        EventManager.ObserverMethodListener<EqualityTestClass> observerRefTwo = new EventManager.ObserverMethodListener<EqualityTestClass>(test2, methodOne);
 
         assert !observerRefOne.equals(observerRefTwo) ;
         assert !Integer.valueOf(observerRefOne.hashCode()).equals(observerRefTwo.hashCode());
@@ -86,8 +86,8 @@ public class ObserverReferenceTest {
     @Test
     public void testInequalityBetweenDifferentInstancesAndDifferentMethods() {
 
-        EventManagerImpl.ObserverMethodListener<EqualityTestClass> observerRefOne = new EventManagerImpl.ObserverMethodListener<EqualityTestClass>(test, methodOne);
-        EventManagerImpl.ObserverMethodListener<EqualityTestClass> observerRefTwo = new EventManagerImpl.ObserverMethodListener<EqualityTestClass>(test2, methodTwoBase);
+        EventManager.ObserverMethodListener<EqualityTestClass> observerRefOne = new EventManager.ObserverMethodListener<EqualityTestClass>(test, methodOne);
+        EventManager.ObserverMethodListener<EqualityTestClass> observerRefTwo = new EventManager.ObserverMethodListener<EqualityTestClass>(test2, methodTwoBase);
 
         assert !observerRefOne.equals(observerRefTwo) ;
         assert !Integer.valueOf(observerRefOne.hashCode()).equals(observerRefTwo.hashCode());
