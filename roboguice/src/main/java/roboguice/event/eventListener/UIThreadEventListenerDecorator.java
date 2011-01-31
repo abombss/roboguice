@@ -10,13 +10,15 @@ public class UIThreadEventListenerDecorator<T> implements EventListener<T> {
 
     protected EventListener<T> eventListener;
     protected Handler handler;
+    protected EventFireRunnableFactory eventFireFactory;
 
-    public UIThreadEventListenerDecorator(EventListener<T> eventListener) {
+    public UIThreadEventListenerDecorator(EventListener<T> eventListener, Handler handler, EventFireRunnableFactory eventFireFactory) {
         this.eventListener = eventListener;
-        this.handler = new Handler();
+        this.handler = handler;
+        this.eventFireFactory = eventFireFactory;
     }
 
     public void onEvent(T event) {
-        handler.post(new EventFireRunnable<T>(event, eventListener));
+        handler.post(eventFireFactory.build(event, eventListener));
     }
 }

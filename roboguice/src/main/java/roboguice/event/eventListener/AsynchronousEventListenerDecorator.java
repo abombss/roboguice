@@ -1,6 +1,5 @@
 package roboguice.event.eventListener;
 
-import com.google.inject.Inject;
 import roboguice.event.EventListener;
 
 /**
@@ -9,11 +8,11 @@ import roboguice.event.EventListener;
 public class AsynchronousEventListenerDecorator<T> implements EventListener<T>{
 
     protected EventListener<T> eventListener;
-    @Inject
     protected EventFireAsyncTaskFactory asyncTaskFactory;
 
-    public AsynchronousEventListenerDecorator(EventListener<T> eventListener) {
+    public AsynchronousEventListenerDecorator(EventListener<T> eventListener, EventFireAsyncTaskFactory asyncTaskFactory) {
         this.eventListener = eventListener;
+        this.asyncTaskFactory = asyncTaskFactory;
     }
 
     public void onEvent(T event) {
