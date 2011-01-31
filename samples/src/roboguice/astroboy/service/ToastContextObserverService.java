@@ -4,7 +4,7 @@ import android.content.Context;
 import android.widget.Toast;
 import com.google.inject.Inject;
 import roboguice.event.Observes;
-import roboguice.event.eventListener.ObservesThreading;
+import roboguice.event.ObservesThreading;
 
 /**
  *@author John Ericksen

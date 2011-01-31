@@ -8,9 +8,9 @@ import roboguice.event.EventListener;
 public class AsynchronousEventListenerDecorator<T> implements EventListener<T>{
 
     protected EventListener<T> eventListener;
-    protected EventFireAsyncTaskFactory asyncTaskFactory;
+    protected RunnableAsyncTaskAdaptorFactory asyncTaskFactory;
 
-    public AsynchronousEventListenerDecorator(EventListener<T> eventListener, EventFireAsyncTaskFactory asyncTaskFactory) {
+    public AsynchronousEventListenerDecorator(EventListener<T> eventListener, RunnableAsyncTaskAdaptorFactory asyncTaskFactory) {
         this.eventListener = eventListener;
         this.asyncTaskFactory = asyncTaskFactory;
     }

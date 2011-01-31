@@ -9,7 +9,7 @@ import roboguice.event.EventListener;
 public class AsynchronousEventListenerDecoratorFactory {
 
     @Inject
-    protected EventFireAsyncTaskFactory taskFactory;
+    protected RunnableAsyncTaskAdaptorFactory taskFactory;
     
     public <T> EventListener<T> buildDecorator(EventListener<T> eventListener) {
         return new AsynchronousEventListenerDecorator<T>(eventListener, taskFactory);

@@ -2,6 +2,7 @@ package roboguice.event.eventListener;
 
 import android.os.Handler;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import roboguice.event.EventListener;
 
 /**
@@ -10,11 +11,11 @@ import roboguice.event.EventListener;
 public class UIThreadEventListenerDecoratorFactory {
 
     @Inject
-    protected Handler handler;
+    protected Provider<Handler> handlerProvider;
     @Inject
     protected EventFireRunnableFactory eventFireFactory;
 
     public <T> EventListener<T> buildDecorator(EventListener<T> eventListener) {
-        return new UIThreadEventListenerDecorator<T>(eventListener, handler, eventFireFactory);
+        return new UIThreadEventListenerDecorator<T>(eventListener, handlerProvider.get(), eventFireFactory);
     }
 }

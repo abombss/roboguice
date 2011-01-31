@@ -3,8 +3,8 @@ package roboguice.event;
 import org.junit.Before;
 import org.junit.Test;
 import roboguice.event.eventListener.AsynchronousEventListenerDecorator;
-import roboguice.event.eventListener.EventFireAsyncTaskFactory;
 import roboguice.event.eventListener.ObserverMethodListener;
+import roboguice.event.eventListener.RunnableAsyncTaskAdaptorFactory;
 
 import java.lang.reflect.Method;
 
@@ -101,7 +101,7 @@ public class ObserverReferenceTest {
 
         EventListener<EqualityTestClass> observerRefOne = new ObserverMethodListener<EqualityTestClass>(test, methodOne);
         EventListener<EqualityTestClass> observerRefTwo = new AsynchronousEventListenerDecorator<EqualityTestClass>(
-                new ObserverMethodListener<EqualityTestClass>(test, methodOne), new EventFireAsyncTaskFactory());
+                new ObserverMethodListener<EqualityTestClass>(test, methodOne), new RunnableAsyncTaskAdaptorFactory());
 
         assert !observerRefOne.equals(observerRefTwo) ;
         assert !Integer.valueOf(observerRefOne.hashCode()).equals(observerRefTwo.hashCode());

@@ -5,7 +5,7 @@ import roboguice.util.SafeAsyncTask;
 /**
 * @author John Ericksen
 */
-class RunnableAsyncTaskAdaptor<T> extends SafeAsyncTask<Void> {
+class RunnableAsyncTaskAdaptor extends SafeAsyncTask<Void> {
 
     protected Runnable runnable;
 

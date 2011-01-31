@@ -1,7 +1,5 @@
 package roboguice.event;
 
-import roboguice.event.eventListener.ObservesThreading;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

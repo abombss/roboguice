@@ -25,10 +25,15 @@ public class EventManagerModule extends AbstractModule {
     protected void configure() {
 
         // Context observers
-        bind(EventManager.class).toInstance(eventManager);
         ObservesThreadingFactory observerThreadingFactory = new ObservesThreadingFactory();
-        requestInjection(observerThreadingFactory);
+        
+        bind(EventManager.class).toInstance(eventManager);
+        bind(ObservesThreadingFactory.class).toInstance(observerThreadingFactory);
+
+
         bindListener(Matchers.any(), new ObservesTypeListener(contextProvider, eventManager,observerThreadingFactory));
+        
+        requestInjection(observerThreadingFactory);
         requestInjection(eventManager);
     }
 }

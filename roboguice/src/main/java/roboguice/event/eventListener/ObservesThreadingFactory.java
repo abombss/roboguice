@@ -2,6 +2,7 @@ package roboguice.event.eventListener;
 
 import com.google.inject.Inject;
 import roboguice.event.EventListener;
+import roboguice.event.ObservesThreading;
 
 /**
  * @author John Ericksen
