@@ -16,14 +16,6 @@ public class ToastContextObserverService {
         Toast.makeText(context, event.getMessage() + " to UI Thread", event.getDuration()).show();
     }
 
-    public void toastCurrent(@Observes(ObservesThreading.CURRENT_THREAD) ToastEvent event){
-        Toast.makeText(context, event.getMessage() + " to Current Thread", event.getDuration()).show();
-    }
-
-    public void toastAsync(@Observes(ObservesThreading.ASYNCHRONOUS) ToastEvent event){
-        Toast.makeText(context, event.getMessage() + " to Backround Thread", event.getDuration()).show();
-    }
-
     public static class ToastEvent{
         protected String message;
         protected int duration;
