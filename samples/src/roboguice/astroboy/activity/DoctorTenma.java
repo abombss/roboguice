@@ -15,6 +15,15 @@
  */
 package roboguice.astroboy.activity;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+import com.google.inject.Inject;
+import com.google.inject.internal.Nullable;
 import roboguice.activity.RoboActivity;
 import roboguice.astroboy.AstroboyModule;
 import roboguice.astroboy.R;
@@ -27,16 +36,6 @@ import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.TextView;
-
-import com.google.inject.Inject;
-import com.google.inject.internal.Nullable;
-
 import java.util.Date;
 
 import static junit.framework.Assert.assertEquals;
@@ -48,6 +47,8 @@ public class DoctorTenma extends RoboActivity {
     // See ResourceListener for details.
     @InjectView(R.id.widget1) protected TextView helloView;
     @InjectResource(R.string.hello) protected String hello;
+
+    @InjectView(R.id.button1) protected Button helloButton;
 
     /**
      * You can inject Extras from the intent that started this activity with
@@ -148,8 +149,11 @@ public class DoctorTenma extends RoboActivity {
 
         Ln.d(talker.talk());
 
-        backgroundTaskProvider.execute();
-
+        helloButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                backgroundTaskProvider.execute();
+            }
+        });
     }
 
 

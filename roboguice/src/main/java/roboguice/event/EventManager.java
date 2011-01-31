@@ -5,12 +5,8 @@ import android.content.Context;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
-import roboguice.event.javaassist.RuntimeSupport;
-import roboguice.util.Ln;
+import roboguice.event.eventListener.ObserverMethodListener;
 
-import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -49,17 +45,6 @@ public class EventManager {
         registerObserver(contextProvider.get(),event,listener);
     }
 
-    /**
-     * Register a method observer with the current context (provided).
-     *
-     * @param instance to be called
-     * @param method to be called
-     * @param event observed
-     * @param <T> event type
-     */
-    public <T> void registerObserver(Object instance, Method method, Class<T> event) {
-        registerObserver(contextProvider.get(),instance,method,event);
-    }
 
      /**
      * Unregister the given EventListener with the current context (provided).
@@ -80,7 +65,7 @@ public class EventManager {
      * @param <T> event type
      */
     public <T> void unregisterObserver(Object instance, Class<T> event) {
-        unregisterObserver(contextProvider.get(),instance,event);
+        unregisterObserver(contextProvider.get(), instance, event);
     }
 
     /**
@@ -129,18 +114,6 @@ public class EventManager {
     }
 
     /**
-     * Registers given method with provided context and event.
-     *
-     * @param context associated with event
-     * @param instance to be called
-     * @param method to be called
-     * @param event observed
-     */
-    public <T> void registerObserver(Context context, Object instance, Method method, Class<T> event) {
-        registerObserver(context, event, new ObserverMethodListener<T>(instance, method));
-    }
-
-    /**
      * Unregisters the provided event listener from the given event
      *
      * @param context associated with event
@@ -186,7 +159,7 @@ public class EventManager {
             final EventListener listener = iterator.next();
             if( listener instanceof ObserverMethodListener ) {
                 final ObserverMethodListener observer = ((ObserverMethodListener)listener);
-                final Object registeredInstance = observer.instanceReference.get();
+                final Object registeredInstance = observer.getInstanceReference().get();
                 if (registeredInstance == instance) {
                     iterator.remove();
                     break;
@@ -237,50 +210,4 @@ public class EventManager {
         }
     }
 
-    public static class ObserverMethodListener<T> implements EventListener<T> {
-        protected String descriptor;
-        protected Method method;
-        protected WeakReference<Object> instanceReference;
-
-        public ObserverMethodListener(Object instance, Method method) {
-            this.instanceReference = new WeakReference<Object>(instance);
-            this.method = method;
-            this.descriptor = method.getName() + ':' + RuntimeSupport.makeDescriptor(method);
-            method.setAccessible(true);
-        }
-
-        public void onEvent(T event) {
-            try {
-                final Object instance = instanceReference.get();
-                method.invoke(instance, event);
-            } catch (InvocationTargetException e) {
-                Ln.e(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            ObserverMethodListener that = (ObserverMethodListener) o;
-
-            if (descriptor != null ? !descriptor.equals(that.descriptor) : that.descriptor != null) return false;
-            Object thisInstance = instanceReference.get();
-            Object thatInstance = that.instanceReference.get();
-            return !(thisInstance != null ? !thisInstance.equals(thatInstance) : thatInstance != null);
-
-        }
-
-        @Override
-        public int hashCode() {
-            int result = descriptor != null ? descriptor.hashCode() : 0;
-            Object thisInstance = instanceReference.get();
-            result = 31 * result + (thisInstance != null ? thisInstance.hashCode() : 0);
-            return result;
-        }
-
-    }
 }

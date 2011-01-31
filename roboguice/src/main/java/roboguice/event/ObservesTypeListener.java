@@ -6,6 +6,8 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.spi.InjectionListener;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
+import roboguice.event.eventListener.ObserverMethodListener;
+import roboguice.event.eventListener.ObservesThreading;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -48,7 +50,7 @@ public class ObservesTypeListener implements TypeListener {
 
             for(Annotation annotation : annotationArray)
                 if(annotation.annotationType().equals(Observes.class))
-                    registerContextObserver(iTypeEncounter, method, parameterType);
+                    registerContextObserver(iTypeEncounter, method, parameterType, ((Observes)annotation).value());
         }
     }
 
@@ -58,11 +60,12 @@ public class ObservesTypeListener implements TypeListener {
      * @param iTypeEncounter
      * @param method
      * @param parameterType
-     * @param <I>
+     * @param threadType
+     * @param <I, T>
      */
-    protected <I> void registerContextObserver(TypeEncounter<I> iTypeEncounter, Method method, Class parameterType) {
+    protected <I, T> void registerContextObserver(TypeEncounter<I> iTypeEncounter, Method method, Class<T> parameterType, int threadType) {
         checkMethodParameters(method);
-        iTypeEncounter.register(new ContextObserverMethodInjector<I>(contextProvider, eventManager, method, parameterType));
+        iTypeEncounter.register(new ContextObserverMethodInjector<I, T>(contextProvider, eventManager, method, parameterType,threadType));
     }
 
     /**
@@ -81,21 +84,25 @@ public class ObservesTypeListener implements TypeListener {
      *
      * @param <I>
      */
-    public static class ContextObserverMethodInjector<I> implements InjectionListener<I> {
+    public static class ContextObserverMethodInjector<I, T> implements InjectionListener<I> {
         protected Provider<Context> contextProvider;
         protected EventManager eventManager;
         protected Method method;
-        protected Class<?> event;
+        protected Class<T> event;
+        protected int threadType;
 
-        public ContextObserverMethodInjector(Provider<Context> contextProvider, EventManager eventManager, Method method, Class<?> event) {
+        public ContextObserverMethodInjector(Provider<Context> contextProvider, EventManager eventManager, Method method, Class<T> event, int threadType) {
             this.contextProvider = contextProvider;
             this.eventManager = eventManager;
             this.method = method;
             this.event = event;
+            this.threadType = threadType;
         }
 
         public void afterInjection(I i) {
-            eventManager.registerObserver(contextProvider.get(), i, method, event);
+            eventManager.registerObserver(contextProvider.get(), event,
+                    ObservesThreading.buildMethodObserver(threadType,
+                    new ObserverMethodListener<T>(i, method)));
         }
     }
 }

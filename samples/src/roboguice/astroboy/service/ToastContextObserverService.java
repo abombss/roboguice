@@ -4,6 +4,7 @@ import android.content.Context;
 import android.widget.Toast;
 import com.google.inject.Inject;
 import roboguice.event.Observes;
+import roboguice.event.eventListener.ObservesThreading;
 
 /**
  *@author John Ericksen
@@ -11,8 +12,16 @@ import roboguice.event.Observes;
 public class ToastContextObserverService {
     @Inject protected Context context;
 
-    public void toast(@Observes ToastEvent event){
-        Toast.makeText(context, event.getMessage(), event.getDuration()).show();
+    public void toastUI(@Observes(ObservesThreading.UI_THREAD) ToastEvent event){
+        Toast.makeText(context, event.getMessage() + " to UI Thread", event.getDuration()).show();
+    }
+
+    public void toastCurrent(@Observes(ObservesThreading.CURRENT_THREAD) ToastEvent event){
+        Toast.makeText(context, event.getMessage() + " to Current Thread", event.getDuration()).show();
+    }
+
+    public void toastAsync(@Observes(ObservesThreading.ASYNCHRONOUS) ToastEvent event){
+        Toast.makeText(context, event.getMessage() + " to Backround Thread", event.getDuration()).show();
     }
 
     public static class ToastEvent{
