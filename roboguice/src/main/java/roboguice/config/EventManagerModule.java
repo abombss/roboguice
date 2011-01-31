@@ -6,6 +6,7 @@ import com.google.inject.Provider;
 import com.google.inject.matcher.Matchers;
 import roboguice.event.EventManager;
 import roboguice.event.ObservesTypeListener;
+import roboguice.event.eventListener.ObservesThreadingFactory;
 
 /**
  * @author John Ericksen
@@ -25,7 +26,9 @@ public class EventManagerModule extends AbstractModule {
 
         // Context observers
         bind(EventManager.class).toInstance(eventManager);
-        bindListener(Matchers.any(), new ObservesTypeListener(contextProvider, eventManager));
+        ObservesThreadingFactory observerThreadingFactory = new ObservesThreadingFactory();
+        requestInjection(observerThreadingFactory);
+        bindListener(Matchers.any(), new ObservesTypeListener(contextProvider, eventManager,observerThreadingFactory));
         requestInjection(eventManager);
     }
 }

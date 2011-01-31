@@ -1,7 +1,7 @@
 package roboguice.event.eventListener;
 
+import com.google.inject.Inject;
 import roboguice.event.EventListener;
-import roboguice.util.SafeAsyncTask;
 
 /**
  * @author John Ericksen
@@ -9,26 +9,14 @@ import roboguice.util.SafeAsyncTask;
 public class AsynchronousEventListenerDecorator<T> implements EventListener<T>{
 
     protected EventListener<T> eventListener;
+    @Inject
+    protected EventFireAsyncTaskFactory asyncTaskFactory;
 
     public AsynchronousEventListenerDecorator(EventListener<T> eventListener) {
         this.eventListener = eventListener;
     }
 
     public void onEvent(T event) {
-        new EventFireAsyncTask<T>(event, eventListener).execute();
-    }
-
-    protected class EventFireAsyncTask<T> extends SafeAsyncTask<Void>{
-
-        protected EventFireRunnable runnable;
-
-        public EventFireAsyncTask(T event, EventListener<T> eventListener) {
-            runnable = new EventFireRunnable(event, eventListener);
-        }
-
-        public Void call() throws Exception {
-            runnable.run();
-            return null;
-        }
+        asyncTaskFactory.build(event, eventListener).execute();
     }
 }
