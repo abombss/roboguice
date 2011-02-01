@@ -31,5 +31,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target( { ElementType.PARAMETER })
 public @interface Observes {
-    int value() default ObservesThreading.CURRENT_THREAD;
+    EventThread value() default EventThread.CURRENT;
 }

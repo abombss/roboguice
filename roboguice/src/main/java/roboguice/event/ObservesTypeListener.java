@@ -65,7 +65,7 @@ public class ObservesTypeListener implements TypeListener {
      * @param threadType
      * @param <I, T>
      */
-    protected <I, T> void registerContextObserver(TypeEncounter<I> iTypeEncounter, Method method, Class<T> parameterType, int threadType) {
+    protected <I, T> void registerContextObserver(TypeEncounter<I> iTypeEncounter, Method method, Class<T> parameterType, EventThread threadType) {
         checkMethodParameters(method);
         iTypeEncounter.register(new ContextObserverMethodInjector<I, T>(contextProvider, eventManager, observerThreadingFactory,
                 method, parameterType,threadType));
@@ -93,11 +93,11 @@ public class ObservesTypeListener implements TypeListener {
         protected EventManager eventManager;
         protected Method method;
         protected Class<T> event;
-        protected int threadType;
+        protected EventThread threadType;
 
         public ContextObserverMethodInjector(Provider<Context> contextProvider, EventManager eventManager,
                                              ObservesThreadingFactory observerThreadingFactory,  Method method,
-                                             Class<T> event, int threadType) {
+                                             Class<T> event, EventThread threadType) {
             this.contextProvider = contextProvider;
             this.observerThreadingFactory = observerThreadingFactory;
             this.eventManager = eventManager;

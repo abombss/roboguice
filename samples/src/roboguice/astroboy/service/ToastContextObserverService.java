@@ -3,8 +3,8 @@ package roboguice.astroboy.service;
 import android.content.Context;
 import android.widget.Toast;
 import com.google.inject.Inject;
+import roboguice.event.EventThread;
 import roboguice.event.Observes;
-import roboguice.event.ObservesThreading;
 
 /**
  *@author John Ericksen
@@ -12,7 +12,7 @@ import roboguice.event.ObservesThreading;
 public class ToastContextObserverService {
     @Inject protected Context context;
 
-    public void toastUI(@Observes(ObservesThreading.UI_THREAD) ToastEvent event){
+    public void toastUI(@Observes(EventThread.UI) ToastEvent event){
         Toast.makeText(context, event.getMessage() + " to UI Thread", event.getDuration()).show();
     }
 

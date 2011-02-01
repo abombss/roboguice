@@ -7,7 +7,7 @@ import com.google.inject.Module;
 import org.junit.Before;
 import org.junit.Test;
 import roboguice.event.EventListener;
-import roboguice.event.ObservesThreading;
+import roboguice.event.EventThread;
 
 import static junit.framework.Assert.assertEquals;
 import static org.easymock.EasyMock.*;
@@ -50,7 +50,7 @@ public class ObservesThreadingFactoryTest {
 
         replay(uiThreadFactory, asyncFactory);
 
-        EventListener outputListener = observesFactory.buildMethodObserver(ObservesThreading.CURRENT_THREAD, eventListener);
+        EventListener outputListener = observesFactory.buildMethodObserver(EventThread.CURRENT, eventListener);
 
         assertEquals(eventListener, outputListener);
 
@@ -67,7 +67,7 @@ public class ObservesThreadingFactoryTest {
 
         replay(uiThreadFactory, asyncFactory);
 
-        assertEquals(observesFactory.buildMethodObserver(ObservesThreading.UI_THREAD, eventListener),
+        assertEquals(observesFactory.buildMethodObserver(EventThread.UI, eventListener),
                 outputListener);
 
         verify(uiThreadFactory, asyncFactory);
@@ -83,7 +83,7 @@ public class ObservesThreadingFactoryTest {
 
         replay(uiThreadFactory, asyncFactory);
 
-        assertEquals(observesFactory.buildMethodObserver(ObservesThreading.ASYNCHRONOUS, eventListener),
+        assertEquals(observesFactory.buildMethodObserver(EventThread.ASYNCHRONOUS, eventListener),
                 outputListener);
 
         verify(uiThreadFactory, asyncFactory);
