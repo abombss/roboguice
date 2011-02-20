@@ -1,11 +1,8 @@
 package roboguice.activity;
 
-import roboguice.application.RoboApplication;
-import roboguice.inject.ContextScope;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.content.Intent;
+import roboguice.application.RoboApplication;
 
 /**
  * An activity that can be used to display a splash page while initializing the
@@ -35,29 +32,21 @@ public abstract class RoboSplashActivity extends Activity {
                 // Set the execution context for this thread in case the user
                 // want to use the injector
                 final RoboApplication app = (RoboApplication) getApplication();
-                final ContextScope scope = app.getInjector().getInstance(ContextScope.class);
+                
+                doStuffInBackground(app);
 
-                scope.enter(app);
-                try {
-
-                    doStuffInBackground(app);
-
-                    // Make sure we display splash for MIN_DISPLAY_MS
-                    final long duration = System.currentTimeMillis() - start;
-                    if (duration < minDisplayMs) {
-                        try {
-                            Thread.sleep(minDisplayMs - duration);
-                        } catch (InterruptedException e) {
-                            Thread.interrupted();
-                        }
+                // Make sure we display splash for MIN_DISPLAY_MS
+                final long duration = System.currentTimeMillis() - start;
+                if (duration < minDisplayMs) {
+                    try {
+                        Thread.sleep(minDisplayMs - duration);
+                    } catch (InterruptedException e) {
+                        Thread.interrupted();
                     }
-
-                    startNextActivity();
-                    andFinishThisOne();
-
-                } finally {
-                    scope.exit(app);
                 }
+
+                startNextActivity();
+                andFinishThisOne();
             }
 
         }).start();

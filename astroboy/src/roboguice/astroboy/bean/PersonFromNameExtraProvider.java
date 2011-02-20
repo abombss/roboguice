@@ -15,28 +15,23 @@
  */
 package roboguice.astroboy.bean;
 
-import java.util.Date;
-
-import roboguice.inject.ContextScoped;
+import com.google.inject.Provider;
 import roboguice.inject.InjectExtra;
 
-import com.google.inject.Provider;
-
-@ContextScoped
 public class PersonFromNameExtraProvider implements Provider<Person> {
 
     @InjectExtra("nameExtra")
     protected String nameExtra;
 
-    @InjectExtra(value = "ageExtra", optional = true)
-    protected Date   ageExtra;
+    //@InjectExtra(value = "ageExtra", optional = true)
+    //protected Date   ageExtra;
 
     public Person get() {
-        if (ageExtra == null) {
+        //if (ageExtra == null) {
             return new Person(nameExtra);
-        } else {
-            return new Person(nameExtra, ageExtra);
-        }
+        //} else {
+        //    return new Person(nameExtra, ageExtra);
+        //}
     }
 
 }

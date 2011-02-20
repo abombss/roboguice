@@ -10,20 +10,18 @@
  */
 package roboguice.service;
 
+import android.app.Service;
+import android.content.Intent;
+import android.content.res.Configuration;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import roboguice.application.RoboApplication;
 import roboguice.event.EventManager;
-import roboguice.inject.ContextScope;
 import roboguice.inject.InjectorProvider;
 import roboguice.service.event.OnConfigurationChangedEvent;
 import roboguice.service.event.OnCreateEvent;
 import roboguice.service.event.OnDestroyEvent;
 import roboguice.service.event.OnStartEvent;
-
-import android.app.Service;
-import android.content.Intent;
-import android.content.res.Configuration;
-
-import com.google.inject.Injector;
 
 /**
  * A {@link RoboService} extends from {@link Service} to provide dynamic
@@ -50,36 +48,28 @@ import com.google.inject.Injector;
  */
 public abstract class RoboService extends Service implements InjectorProvider {
 
+    @Inject
     protected EventManager eventManager;
-    protected ContextScope scope;
 
     @Override
     public void onCreate() {
-        final Injector injector = getInjector();
-        eventManager = injector.getInstance(EventManager.class);
-        scope = injector.getInstance(ContextScope.class);
-        scope.enter(this);
-        injector.injectMembers(this);
+        getInjector().injectMembers(this);
         super.onCreate();
         eventManager.fire(new OnCreateEvent() );
     }
 
     @Override
     public void onStart(Intent intent, int startId) {
-        scope.enter(this);
         super.onStart(intent, startId);
         eventManager.fire(new OnStartEvent());
     }
 
     @Override
     public void onDestroy() {
-        scope.enter(this);
         try {
             eventManager.fire(new OnDestroyEvent() );
         } finally {
             eventManager.clear(this);
-            scope.exit(this);
-            scope.dispose(this);
             super.onDestroy();
         }
     }
@@ -93,7 +83,12 @@ public abstract class RoboService extends Service implements InjectorProvider {
     /**
      * @see roboguice.application.RoboApplication#getInjector() 
      */
+    protected Injector injector;
+    @Override
     public Injector getInjector() {
-        return ((RoboApplication) getApplication()).getInjector();
+        if(injector == null){
+            injector = ((RoboApplication) getApplication()).getInjector(this);
+        }
+        return injector;
     }
 }

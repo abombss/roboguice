@@ -1,9 +1,8 @@
 package roboguice.util;
 
-import android.content.Context;
+import android.app.Application;
 import android.content.pm.ApplicationInfo;
 import android.util.Log;
-
 import com.google.inject.Inject;
 
 import java.text.SimpleDateFormat;
@@ -210,10 +209,10 @@ public class Ln  {
         }
 
         @Inject
-        public BaseConfig(Context context) {
+        public BaseConfig(Application application) {
             try {
-                packageName = context.getPackageName();
-                final int flags = context.getPackageManager().getApplicationInfo(packageName, 0).flags;
+                packageName = application.getPackageName();
+                final int flags = application.getPackageManager().getApplicationInfo(packageName, 0).flags;
                 minimumLogLevel = (flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0 ? Log.VERBOSE : Log.INFO;
                 scope = packageName.toUpperCase();
 

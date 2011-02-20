@@ -1,33 +1,31 @@
 package roboguice.config;
 
-import roboguice.event.EventManager;
-import roboguice.event.ObservesTypeListener;
-
-import android.content.Context;
-
 import com.google.inject.AbstractModule;
-import com.google.inject.Provider;
-import com.google.inject.matcher.Matchers;
+import roboguice.event.Observes;
+import roboguice.event.ObservesTypeListenerFactory;
+import roboguice.inject.CustomInjectionRegistrationListener;
+import roboguice.inject.delayedInjection.DelayedInjectionListenerFactory;
 
 /**
  * @author John Ericksen
  */
 public class EventManagerModule extends AbstractModule {
 
-    protected EventManager eventManager;
-    protected Provider<Context> contextProvider;
+    protected CustomInjectionRegistrationListener customInjectionRegistrationListener;
 
-    public EventManagerModule(EventManager eventManager, Provider<Context> contextProvider) {
-        this.eventManager = eventManager;
-        this.contextProvider = contextProvider;
+    public EventManagerModule(CustomInjectionRegistrationListener customInjectionRegistrationListener){
+        this.customInjectionRegistrationListener = customInjectionRegistrationListener;
     }
 
     @Override
     protected void configure() {
-
         // Context observers
-        bind(EventManager.class).toInstance(eventManager);
-        bindListener(Matchers.any(), new ObservesTypeListener(contextProvider, eventManager));
-        requestInjection(eventManager);
+        ObservesTypeListenerFactory observesTypeListenerFactory = new ObservesTypeListenerFactory();
+        requestInjection(observesTypeListenerFactory);
+        DelayedInjectionListenerFactory observesDelayedInjectorFactory =
+                new DelayedInjectionListenerFactory(observesTypeListenerFactory);
+        customInjectionRegistrationListener.registerMemberInjector(Observes.class, observesDelayedInjectorFactory);
+
+        requestInjection(observesDelayedInjectorFactory);
     }
 }

@@ -1,11 +1,10 @@
 package roboguice.test;
 
+import android.app.Instrumentation;
 import android.content.Context;
 import android.test.InstrumentationTestCase;
-import android.app.Instrumentation;
 import com.google.inject.Injector;
 import roboguice.application.RoboApplication;
-import roboguice.inject.ContextScope;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
@@ -48,14 +47,8 @@ public class RoboUnitTestCase<AppType extends RoboApplication> extends Instrumen
         final Constructor constructor = applicationType().getConstructor(Instrumentation.class);
         final RoboApplication app = (RoboApplication)constructor.newInstance(instrumentation);
         injector = app.getInjector();
-        final ContextScope scope = injector.getInstance(ContextScope.class);
 
-        try {
-            scope.enter(context);
-            super.runTest();
-        } finally {
-            scope.exit(context);
-        }
+        super.runTest();
     }
 
     protected Injector getInjector() {

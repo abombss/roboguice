@@ -1,13 +1,13 @@
 package roboguice.event;
 
+import android.content.Context;
+import com.google.inject.*;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
+import roboguice.config.CustomInjectionModule;
 import roboguice.config.EventManagerModule;
-
-import android.content.Context;
-
-import com.google.inject.*;
+import roboguice.inject.CustomInjectionRegistrationListener;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * @author John Ericksen
  */
-public class ObservesTypeListenerTest {
+public class ObservesTypeListenerFactoryTest {
 
     private EventManager eventManager;
     private Provider<Context> contextProvider;
@@ -34,7 +34,9 @@ public class ObservesTypeListenerTest {
             }
         };
 
-        Module eventManagerModule = new EventManagerModule(new EventManager(), contextProvider);
+        CustomInjectionRegistrationListener customInjectionRegistrationListener = new CustomInjectionRegistrationListener();
+
+        Module eventManagerModule = new EventManagerModule(customInjectionRegistrationListener);
 
         Module contextProviderModule = new AbstractModule() {
             public void configure() {
@@ -42,7 +44,9 @@ public class ObservesTypeListenerTest {
             }
         };
 
-        injector = Guice.createInjector(eventManagerModule, contextProviderModule);
+        Module customInjectionModule = new CustomInjectionModule(customInjectionRegistrationListener);
+
+        injector = Guice.createInjector(eventManagerModule, contextProviderModule, customInjectionModule);
 
         eventManager = injector.getInstance(EventManager.class);
 

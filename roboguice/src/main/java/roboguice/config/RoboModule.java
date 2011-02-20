@@ -1,10 +1,5 @@
 package roboguice.config;
 
-import roboguice.inject.*;
-import roboguice.util.Ln;
-import roboguice.util.RoboAsyncTask;
-import roboguice.util.RoboThread;
-
 import android.app.*;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -20,11 +15,11 @@ import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
-import com.google.inject.Provider;
 import com.google.inject.matcher.Matchers;
+import roboguice.inject.*;
+import roboguice.util.Ln;
 
 import java.util.List;
 
@@ -37,26 +32,25 @@ import java.util.List;
  */
 public class RoboModule extends AbstractModule {
 
-    protected ContextScope contextScope;
-    protected Provider<Context> throwingContextProvider;
-    protected Provider<Context> contextProvider;
-    protected ResourceListener resourceListener;
-    protected ViewListener viewListener;
-    protected ExtrasListener extrasListener;
-    protected PreferenceListener preferenceListener;
-    protected Application application;
 
-    public RoboModule(ContextScope contextScope, Provider<Context> throwingContextProvider, Provider<Context> contextProvider,
-            ResourceListener resourceListener, ViewListener viewListener, ExtrasListener extrasListener,
-            PreferenceListener preferenceListener, Application application) {
-        this.contextScope = contextScope;
-        this.throwingContextProvider = throwingContextProvider;
-        this.contextProvider = contextProvider;
+    protected ResourceListener resourceListener;
+    protected ViewListenerFactory viewListenerFactory;
+    protected ExtrasListenerFactory extrasListenerFactory;
+    protected PreferenceListenerFactory preferenceListenerFactory;
+    protected Application application;
+    protected CustomInjectionRegistrationListener customInjectionRegistrationListener;
+    protected boolean injectorPreferenceListener;
+
+    public RoboModule(ResourceListener resourceListener, ViewListenerFactory viewListenerFactory, ExtrasListenerFactory extrasListenerFactory,
+            PreferenceListenerFactory preferenceListenerFactory, Application application, CustomInjectionRegistrationListener customInjectionRegistrationListener,
+            boolean injectorPreferenceListener) {
         this.resourceListener = resourceListener;
-        this.viewListener = viewListener;
-        this.extrasListener = extrasListener;
-        this.preferenceListener = preferenceListener;
+        this.viewListenerFactory = viewListenerFactory;
+        this.extrasListenerFactory = extrasListenerFactory;
+        this.preferenceListenerFactory = preferenceListenerFactory;
         this.application = application;
+        this.customInjectionRegistrationListener = customInjectionRegistrationListener;
+        this.injectorPreferenceListener = injectorPreferenceListener;
     }
 
     /**
@@ -71,17 +65,12 @@ public class RoboModule extends AbstractModule {
     @Override
     protected void configure() {
         // Context Scope bindings
-        bindScope(ContextScoped.class, contextScope);
-        bind(ContextScope.class).toInstance(contextScope);
-        bind(Context.class).toProvider(throwingContextProvider).in(ContextScoped.class);
-        bind(Activity.class).toProvider(ActivityProvider.class);
         bind(AssetManager.class).toProvider( AssetManagerProvider.class );
 
         // Sundry Android Classes
         bind(SharedPreferences.class).toProvider(SharedPreferencesProvider.class);
         bind(Resources.class).toProvider(ResourcesProvider.class);
         bind(ContentResolver.class).toProvider(ContentResolverProvider.class);
-
         for (Class<?> c = application.getClass(); c != null && Application.class.isAssignableFrom(c); c = c.getSuperclass())
             bind((Class<Object>) c).toInstance(application);
 
@@ -100,20 +89,15 @@ public class RoboModule extends AbstractModule {
         bind(ConnectivityManager.class).toProvider(new SystemServiceProvider<ConnectivityManager>(Context.CONNECTIVITY_SERVICE));
         bind(WifiManager.class).toProvider(new SystemServiceProvider<WifiManager>(Context.WIFI_SERVICE));
         bind(InputMethodManager.class).toProvider(new SystemServiceProvider<InputMethodManager>(Context.INPUT_METHOD_SERVICE));
-        bind(SensorManager.class).toProvider( new SystemServiceProvider<SensorManager>(Context.SENSOR_SERVICE));
+        bind(SensorManager.class).toProvider(new SystemServiceProvider<SensorManager>(Context.SENSOR_SERVICE));
 
 
         // Android Resources, Views and extras require special handling
         bindListener(Matchers.any(), resourceListener);
-        bindListener(Matchers.any(), extrasListener);
-        bindListener(Matchers.any(), viewListener);
-
-        if (preferenceListener != null)
-          bindListener(Matchers.any(), preferenceListener);
         
         requestStaticInjection( Ln.class );
-        requestStaticInjection( RoboThread.class );
-        requestStaticInjection( RoboAsyncTask.class );
     }
+
+
 
 }

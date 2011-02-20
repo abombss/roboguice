@@ -15,32 +15,28 @@
  */
 package roboguice.astroboy.activity;
 
-import roboguice.activity.RoboActivity;
-import roboguice.astroboy.AstroboyModule;
-import roboguice.astroboy.R;
-import roboguice.astroboy.bean.*;
-import roboguice.astroboy.service.ExampleObserver;
-import roboguice.astroboy.service.TalkingThing;
-import roboguice.inject.ExtrasListener;
-import roboguice.inject.InjectExtra;
-import roboguice.inject.InjectResource;
-import roboguice.inject.InjectView;
-import roboguice.util.Ln;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
-
 import com.google.inject.Inject;
 import com.google.inject.internal.Nullable;
+import roboguice.activity.RoboActivity;
+import roboguice.astroboy.AstroboyModule;
+import roboguice.astroboy.R;
+import roboguice.astroboy.bean.*;
+import roboguice.astroboy.service.ExampleObserver;
+import roboguice.astroboy.service.TalkingThing;
+import roboguice.inject.InjectExtra;
+import roboguice.inject.InjectResource;
+import roboguice.inject.InjectView;
+import roboguice.util.Ln;
 
 import java.util.Date;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 
 public class DoctorTenma extends RoboActivity {
 
@@ -55,7 +51,7 @@ public class DoctorTenma extends RoboActivity {
      * following code : {@code
      * nameExtra=getIntent().getStringExtra("nameExtra");}
      *
-     * @see ExtrasListener
+     * @see roboguice.inject.ExtrasListenerFactory
      */
     @InjectExtra("nameExtra") protected String nameExtra;
 
@@ -65,8 +61,8 @@ public class DoctorTenma extends RoboActivity {
      * is set to true and no extra is found, no value will be injected in the
      * field.
      */
-    @InjectExtra(value = "optionalExtra", optional = true)
-    protected Date myDateExtra        = new Date(0);
+    //@InjectExtra(value = "optionalExtra", optional = true)
+    //protected Date myDateExtra        = new Date(0);
 
     /**
      * The default behavior of the {@link InjectExtra} annotation is to forbid
@@ -74,9 +70,9 @@ public class DoctorTenma extends RoboActivity {
      * should use the {@link Nullable} annotation. In the following example, the
      * extra "nullExtra" MUST exist, but CAN be null.
      */
-    @InjectExtra("nullExtra")
-    @Nullable
-    protected Object nullInjectedMember = new Object();
+    //@InjectExtra("nullExtra")
+    //@Nullable
+    //protected Object nullInjectedMember = new Object();
 
     /**
      * This example shows how to inject a bean converted from an extra value
@@ -96,20 +92,20 @@ public class DoctorTenma extends RoboActivity {
      * String extra. See {@link PersonExtraConverter} and {@link AstroboyModule}
      * .
      */
-    @InjectExtra("nameExtra") protected Person personFromConvertedExtra;
+    //@InjectExtra("nameExtra") protected Person personFromConvertedExtra;
 
     /**
      * This date is injected using the converter {@link DateExtraConverter} that
      * converts a {@link Long} to a {@link Date}.
      */
-    @InjectExtra("timestampExtra") protected Date dateFromTimestampExtra;
+    //@InjectExtra("timestampExtra") protected Date dateFromTimestampExtra;
 
     /**
      * This date is injected using the converter {@link DateTwiceExtraConverter}
      * that converts an {@link Integer} (doubled) to a {@link Date}.
      */
-    @InjectExtra("timestampTwiceExtra")
-    protected Date dateFromTimestampTwiceExtra;
+    //@InjectExtra("timestampTwiceExtra")
+    //protected Date dateFromTimestampTwiceExtra;
 
     // You can inject various useful android objects.
     // See GuiceApplication.configure to see what's available.
@@ -137,14 +133,14 @@ public class DoctorTenma extends RoboActivity {
         });
 
         assertEquals(prefs.getString("dummyPref", "la la la"), "la la la");
-        assertNull(nullInjectedMember);
-        assertEquals(myDateExtra, new Date(0));
+//        assertNull(nullInjectedMember);
+//        assertEquals(myDateExtra, new Date(0));
         assertEquals(nameExtra, "Atom");
-        assertEquals(personFromExtra.getName(), "Atom");
-        assertEquals(personFromExtra.getAge().getTime(), 3000L);
-        assertEquals(personFromConvertedExtra.getName(), "Atom");
-        assertEquals(dateFromTimestampExtra.getTime(), 1000L);
-        assertEquals(dateFromTimestampTwiceExtra.getTime(), 2000L);
+        //assertEquals(personFromExtra.getName(), "Atom");
+        //assertEquals(personFromExtra.getAge().getTime(), 3000L);
+//        assertEquals(personFromConvertedExtra.getName(), "Atom");
+//        assertEquals(dateFromTimestampExtra.getTime(), 1000L);
+//        assertEquals(dateFromTimestampTwiceExtra.getTime(), 2000L);
 
         Ln.d(talker.talk());
 

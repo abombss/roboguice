@@ -15,8 +15,6 @@
  */
 package roboguice.application;
 
-import roboguice.inject.ContextScope;
-
 import com.google.inject.Injector;
 
 /**
@@ -33,9 +31,7 @@ public class RoboInjectableApplication extends RoboApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        final Injector i = getInjector();
-        final ContextScope scope = i.getInstance(ContextScope.class);
-        scope.enter(this);
+        final Injector i = getInjector(this);
         i.injectMembers(this);
     }
 

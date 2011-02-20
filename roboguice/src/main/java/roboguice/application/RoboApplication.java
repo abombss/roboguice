@@ -15,16 +15,14 @@
  */
 package roboguice.application;
 
-import roboguice.config.AbstractAndroidModule;
-import roboguice.config.EventManagerModule;
-import roboguice.config.RoboModule;
-import roboguice.event.EventManager;
-import roboguice.inject.*;
-
 import android.app.Application;
 import android.content.Context;
-
-import com.google.inject.*;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.Stage;
+import roboguice.config.*;
+import roboguice.inject.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,16 +55,12 @@ public class RoboApplication extends Application implements InjectorProvider {
      */
     protected Injector guiceInjector;
 
-    protected ContextScope contextScope;
-    protected Provider<Context> throwingContextProvider;
-    protected Provider<Context> contextProvider;
     protected ResourceListener resourceListener;
-    protected ViewListener viewListener;
-    protected ExtrasListener extrasListener;
-    protected PreferenceListener preferenceListener;
+    protected ViewListenerFactory viewListenerFactory;
+    protected ExtrasListenerFactory extrasListenerFactory;
+    protected PreferenceListenerFactory preferenceListenerFactory;
     protected List<StaticTypeListener> staticTypeListeners;
-    protected EventManager eventManager;
-
+    protected CustomInjectionRegistrationListener customInjectionRegistrationListener;
     /**
      * Returns the {@link Injector} of your application. If none exists yet,
      * creates one by calling {@link #createInjector()}. <br />
@@ -88,6 +82,25 @@ public class RoboApplication extends Application implements InjectorProvider {
         return guiceInjector;
     }
 
+    public Injector getInjector(Context context){
+
+        List<Module> modules = new ArrayList<Module>();
+        Injector injector = getInjector();
+
+        modules.add(new ContextModule(context, customInjectionRegistrationListener, allowPreferenceInjection()));
+        //custom injection looper
+        final Module customInjectionModule = new CustomInjectionModule(customInjectionRegistrationListener);
+        modules.add(customInjectionModule);
+
+        // Separate module required for testing eventmanager
+        final Module eventManagerModule = new EventManagerModule(customInjectionRegistrationListener);
+        modules.add(eventManagerModule);
+
+        addApplicationModules(modules);
+
+        return injector.createChildInjector(modules);
+    }
+
     /**
      * Since we don't create the injector when the {@link RoboApplication} is
      * instantiated, but rather when getInjector is first called (lazy
@@ -97,25 +110,15 @@ public class RoboApplication extends Application implements InjectorProvider {
      * zero if no RoboActivity is used when running the application.
      */
     protected void initInstanceMembers() {
-        contextScope = new ContextScope(this);
-        throwingContextProvider = new Provider<Context>() {
-            public Context get() {
-                return RoboApplication.this;
-            }
-        };
-        
-        contextProvider = contextScope.scope(Key.get(Context.class), throwingContextProvider);
-        resourceListener = new ResourceListener(this);
-        viewListener = new ViewListener(contextProvider, this, contextScope);
-        extrasListener = new ExtrasListener(contextProvider);
-        eventManager = allowContextObservers() ? new EventManager() : new EventManager.NullEventManager();
 
-        if (allowPreferenceInjection())
-          preferenceListener = new PreferenceListener(contextProvider, this, contextScope);
+
+        customInjectionRegistrationListener = new CustomInjectionRegistrationListener();
+
+        resourceListener = new ResourceListener(this);
 
 
         staticTypeListeners = new ArrayList<StaticTypeListener>();
-        staticTypeListeners.add(resourceListener);
+        //staticTypeListeners.add(resourceListener);
     }
 
     /**
@@ -129,16 +132,13 @@ public class RoboApplication extends Application implements InjectorProvider {
      */
     protected Injector createInjector() {
         final ArrayList<Module> modules = new ArrayList<Module>();
-        final Module roboguiceModule = new RoboModule(contextScope, throwingContextProvider,
-                contextProvider, resourceListener, viewListener, extrasListener, preferenceListener, this);
+        final Module roboguiceModule = new RoboModule(resourceListener, viewListenerFactory, extrasListenerFactory, preferenceListenerFactory, this
+        , customInjectionRegistrationListener, allowPreferenceInjection());
         modules.add(roboguiceModule);
 
-        // Separate module required for testing eventmanager
-        final Module eventManagerModule = new EventManagerModule(eventManager, contextProvider);
-        modules.add(eventManagerModule);
-        
-        //context observer manager module
-        addApplicationModules(modules);
+
+
+
         for (Module m : modules)
             if (m instanceof AbstractAndroidModule)
                 ((AbstractAndroidModule) m).setStaticTypeListeners(staticTypeListeners);
