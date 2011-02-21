@@ -1,13 +1,11 @@
 package roboguice.astroboy.service;
 
-import roboguice.activity.event.OnCreateEvent;
+import android.content.Context;
+import com.google.inject.Inject;
+import roboguice.activity.event.OnContentViewAvailableEvent;
 import roboguice.activity.event.OnDestroyEvent;
 import roboguice.event.Observes;
 import roboguice.util.Ln;
-
-import android.content.Context;
-
-import com.google.inject.Inject;
 
 /**
  * Example of the @Observes usage with the defined RoboActivity Events
@@ -18,7 +16,7 @@ public class ExampleObserver {
 
     @Inject protected Context context;
 
-    public void logOnCreate(@Observes OnCreateEvent event) {
+    public void logOnCreate(@Observes OnContentViewAvailableEvent event) {
         Ln.v("onCreate");
     }
 

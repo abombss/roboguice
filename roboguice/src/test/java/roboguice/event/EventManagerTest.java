@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import android.app.Application;
 import android.content.Context;
+import roboguice.inject.ContextProvider;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -28,8 +29,8 @@ public class EventManagerTest {
 
     @Before
     public void setup() throws NoSuchMethodException {
-        eventManager = new EventManager();
         context = EasyMock.createMock(Context.class);
+        eventManager = new EventManager(new ContextProvider(context));
         tester = new ContextObserverTesterImpl();
         eventOneMethods = ContextObserverTesterImpl.getMethods(EventOne.class);
         eventTwoMethods = ContextObserverTesterImpl.getMethods(EventTwo.class);

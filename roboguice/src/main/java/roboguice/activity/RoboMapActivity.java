@@ -15,20 +15,17 @@
  */
 package roboguice.activity;
 
-import roboguice.activity.event.*;
-import roboguice.application.RoboApplication;
-import roboguice.event.EventManager;
-import roboguice.inject.ContextScope;
-import roboguice.inject.InjectorProvider;
-
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-
 import com.google.android.maps.MapActivity;
 import com.google.inject.Injector;
+import roboguice.activity.event.*;
+import roboguice.application.RoboApplication;
+import roboguice.event.EventManager;
+import roboguice.inject.InjectorProvider;
 
 /**
  * A {@link RoboMapActivity} extends from {@link MapActivity} to provide
@@ -39,38 +36,33 @@ import com.google.inject.Injector;
  * @author Mike Burton
  */
 public abstract class RoboMapActivity extends MapActivity implements InjectorProvider {
+
     protected EventManager eventManager;
-    protected ContextScope scope;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        final Injector injector = getInjector();
-        eventManager = injector.getInstance(EventManager.class);
-        scope = injector.getInstance(ContextScope.class);
-        scope.enter(this);
-        injector.injectMembers(this);
+        eventManager = getInjector().getInstance(EventManager.class);
         super.onCreate(savedInstanceState);
-        eventManager.fire(new OnCreateEvent(savedInstanceState));
     }
 
     @Override
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
-        scope.injectViews();
+        getInjector().injectMembers(this);
         eventManager.fire(new OnContentViewAvailableEvent());
     }
 
     @Override
     public void setContentView(View view, LayoutParams params) {
         super.setContentView(view, params);
-        scope.injectViews();
+        getInjector().injectMembers(this);
         eventManager.fire(new OnContentViewAvailableEvent());
     }
 
     @Override
     public void setContentView(View view) {
         super.setContentView(view);
-        scope.injectViews();
+        getInjector().injectMembers(this);
         eventManager.fire(new OnContentViewAvailableEvent());
     }
 
@@ -81,21 +73,18 @@ public abstract class RoboMapActivity extends MapActivity implements InjectorPro
 
     @Override
     protected void onRestart() {
-        scope.enter(this);
         super.onRestart();
         eventManager.fire(new OnRestartEvent());
     }
 
     @Override
     protected void onStart() {
-        scope.enter(this);
         super.onStart();
         eventManager.fire(new OnStartEvent());
     }
 
     @Override
     protected void onResume() {
-        scope.enter(this);
         super.onResume();
         eventManager.fire(new OnResumeEvent());
     }
@@ -109,30 +98,24 @@ public abstract class RoboMapActivity extends MapActivity implements InjectorPro
     @Override
     public void onNewIntent( Intent intent ) {
         super.onNewIntent(intent);
-        scope.enter(this);
         eventManager.fire(new OnNewIntentEvent());
     }
 
     @Override
     protected void onStop() {
-        scope.enter(this);
         try {
             eventManager.fire(new OnStopEvent());
         } finally {
-            scope.exit(this);
             super.onStop();
         }
     }
 
     @Override
     protected void onDestroy() {
-        scope.enter(this);
         try {
             eventManager.fire(new OnDestroyEvent());
         } finally {
             eventManager.clear(this);
-            scope.exit(this);
-            scope.dispose(this);
             super.onDestroy();
         }
     }
@@ -163,9 +146,12 @@ public abstract class RoboMapActivity extends MapActivity implements InjectorPro
     /**
      * @see roboguice.application.RoboApplication#getInjector()
      */
+    protected Injector injector;
     @Override
     public Injector getInjector() {
-        return ((RoboApplication) getApplication()).getInjector();
+        if(injector == null){
+            injector = ((RoboApplication) getApplication()).getInjector(this);
+        }
+        return injector;
     }
-
 }
