@@ -28,8 +28,12 @@ import java.lang.reflect.Field;
  * @author Mike Burton
  */
 public class PreferenceListenerFactory implements FieldMemberInjectorFactory<InjectPreference> {
-    @Inject
+
     protected Provider<Context> contextProvider;
+
+    public PreferenceListenerFactory(Provider<Context> contextProvider) {
+        this.contextProvider = contextProvider;
+    }
 
     @Override
     public <T> MembersInjector<T> buildFieldMemberInjector(Class<?> clazz, Field field, InjectPreference annotation) {

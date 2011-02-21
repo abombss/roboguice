@@ -29,10 +29,12 @@ import java.lang.reflect.Field;
  * @author Mike Burton
  */
 public class ViewListenerFactory implements FieldMemberInjectorFactory<InjectView> {
-    @Inject
+
     protected Provider<Context> contextProvider;
-    @Inject
-    protected Application application;
+
+    public ViewListenerFactory(Provider<Context> contextProvider) {
+        this.contextProvider = contextProvider;
+    }
 
     @Override
     public <T> MembersInjector<T> buildFieldMemberInjector(Class<?> clazz, Field field, InjectView annotation) {

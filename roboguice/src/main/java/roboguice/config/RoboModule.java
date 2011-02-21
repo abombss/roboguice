@@ -19,6 +19,9 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.matcher.Matchers;
 import roboguice.inject.*;
+import roboguice.inject.delayedInjection.DelayedInjectionFactory;
+import roboguice.inject.delayedInjection.DelayedInjectionMemberInjectorFactory;
+import roboguice.inject.delayedInjection.MemberInjectorFactory;
 import roboguice.util.Ln;
 
 import java.util.List;
@@ -32,22 +35,12 @@ import java.util.List;
  */
 public class RoboModule extends AbstractModule {
 
-
-    protected ResourceListener resourceListener;
-    protected ViewListenerFactory viewListenerFactory;
-    protected ExtrasListenerFactory extrasListenerFactory;
-    protected PreferenceListenerFactory preferenceListenerFactory;
     protected Application application;
     protected CustomInjectionRegistrationListener customInjectionRegistrationListener;
     protected boolean injectorPreferenceListener;
 
-    public RoboModule(ResourceListener resourceListener, ViewListenerFactory viewListenerFactory, ExtrasListenerFactory extrasListenerFactory,
-            PreferenceListenerFactory preferenceListenerFactory, Application application, CustomInjectionRegistrationListener customInjectionRegistrationListener,
+    public RoboModule(Application application, CustomInjectionRegistrationListener customInjectionRegistrationListener,
             boolean injectorPreferenceListener) {
-        this.resourceListener = resourceListener;
-        this.viewListenerFactory = viewListenerFactory;
-        this.extrasListenerFactory = extrasListenerFactory;
-        this.preferenceListenerFactory = preferenceListenerFactory;
         this.application = application;
         this.customInjectionRegistrationListener = customInjectionRegistrationListener;
         this.injectorPreferenceListener = injectorPreferenceListener;
@@ -93,9 +86,16 @@ public class RoboModule extends AbstractModule {
 
 
         // Android Resources, Views and extras require special handling
-        bindListener(Matchers.any(), resourceListener);
+        //bindListener(Matchers.any(), resourceListener);
+        customInjectionRegistrationListener.registerMemberInjector(InjectResource.class,
+                buildDelayedInjecitonFactory(new ResourceListener(application)));
         
-        requestStaticInjection( Ln.class );
+        requestStaticInjection(Ln.class);
+    }
+
+    private MemberInjectorFactory buildDelayedInjecitonFactory(DelayedInjectionFactory factory){
+        DelayedInjectionMemberInjectorFactory delayedInjectionFactory = new DelayedInjectionMemberInjectorFactory(factory);
+        return delayedInjectionFactory;
     }
 
 

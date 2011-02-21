@@ -16,10 +16,14 @@ import java.lang.reflect.Method;
  * @author John Ericksen
  */
 public class ObservesTypeListenerFactory<T> implements ParameterInjectionListenerFactory<Observes> {
-    @Inject
+
     protected EventManager eventManager;
-    @Inject
     protected Provider<Context> contextProvider;
+
+    public ObservesTypeListenerFactory(EventManager eventManager, Provider<Context> contextProvider) {
+        this.eventManager = eventManager;
+        this.contextProvider = contextProvider;
+    }
 
     @Override
     public <T> InjectionListener<T> buildParameterMemberInjector(Class<?> clazz, Method method, Class<?> parameterType, T instance, Observes annotation) {

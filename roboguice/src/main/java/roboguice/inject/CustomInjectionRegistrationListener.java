@@ -60,27 +60,25 @@ public class CustomInjectionRegistrationListener implements TypeListener {
     }
 
     private <I> void registerParameterMemberInjector(TypeEncounter<I> typeEncounter, Class<?> clazz, Method method, Annotation[] annotationArray, Class<?> parameterType) {
-       for(Map.Entry<Class<? extends Annotation>, MemberInjectorFactory> injectorEntry : factoryMap.entrySet()){
-           for(Annotation annotation : annotationArray){
-               if(annotation.annotationType().equals(injectorEntry.getKey())){
-                    injectorEntry.getValue().registerParameter(typeEncounter, clazz, method, annotation, parameterType);
-               }
+       for(Annotation annotation : annotationArray){
+           if(factoryMap.containsKey(annotation.annotationType())){
+               factoryMap.get(annotation.annotationType()).registerParameter(typeEncounter, clazz, method, annotation, parameterType);
            }
-        }
+       }
     }
 
     private <I> void registerMethodMemberInjector(TypeEncounter<I> typeEncounter, Class<?> clazz, Method method) {
-        for(Map.Entry<Class<? extends Annotation>, MemberInjectorFactory> injectorEntry : factoryMap.entrySet()){
-            if (method.isAnnotationPresent(injectorEntry.getKey())) {
-                injectorEntry.getValue().registerMethod(typeEncounter, clazz, method, method.getAnnotation(injectorEntry.getKey()));
+        for(Annotation annotation : method.getDeclaredAnnotations()){
+            if(factoryMap.containsKey(annotation.annotationType())){
+                factoryMap.get(annotation.annotationType()).registerMethod(typeEncounter, clazz, method, annotation);
             }
         }
     }
 
     private <I> void registerFieldMemberInjector(TypeEncounter<I> typeEncounter, Class<?> clazz, Field field) {
-        for(Map.Entry<Class<? extends Annotation>, MemberInjectorFactory> injectorEntry : factoryMap.entrySet()){
-            if (field.isAnnotationPresent(injectorEntry.getKey())) {
-                injectorEntry.getValue().registerField(typeEncounter, clazz, field, field.getAnnotation(injectorEntry.getKey()));
+        for(Annotation annotation : field.getDeclaredAnnotations()){
+            if(factoryMap.containsKey(annotation.annotationType())){
+                factoryMap.get(annotation.annotationType()).registerField(typeEncounter, clazz, field, annotation);
             }
         }
     }

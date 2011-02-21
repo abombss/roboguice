@@ -36,7 +36,7 @@ public class ObservesTypeListenerFactoryTest {
 
         CustomInjectionRegistrationListener customInjectionRegistrationListener = new CustomInjectionRegistrationListener();
 
-        Module eventManagerModule = new EventManagerModule(customInjectionRegistrationListener);
+        Module eventManagerModule = new EventManagerModule(contextProvider, customInjectionRegistrationListener);
 
         Module contextProviderModule = new AbstractModule() {
             public void configure() {

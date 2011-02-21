@@ -29,8 +29,12 @@ import java.lang.reflect.Field;
  * @author Pierre-Yves Ricau (py.ricau+roboguice@gmail.com)
  */
 public class ExtrasListenerFactory implements FieldMemberInjectorFactory<InjectExtra> {
-    @Inject
+
     protected Provider<Context> contextProvider;
+
+    public ExtrasListenerFactory(Provider<Context> contextProvider) {
+        this.contextProvider = contextProvider;
+    }
 
     @Override
     public <T> MembersInjector<T> buildFieldMemberInjector(Class<?> clazz, Field field, InjectExtra annotation) {

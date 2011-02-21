@@ -17,10 +17,7 @@ package roboguice.application;
 
 import android.app.Application;
 import android.content.Context;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.Stage;
+import com.google.inject.*;
 import roboguice.config.*;
 import roboguice.inject.*;
 
@@ -55,10 +52,6 @@ public class RoboApplication extends Application implements InjectorProvider {
      */
     protected Injector guiceInjector;
 
-    protected ResourceListener resourceListener;
-    protected ViewListenerFactory viewListenerFactory;
-    protected ExtrasListenerFactory extrasListenerFactory;
-    protected PreferenceListenerFactory preferenceListenerFactory;
     protected List<StaticTypeListener> staticTypeListeners;
     protected CustomInjectionRegistrationListener customInjectionRegistrationListener;
     /**
@@ -87,17 +80,15 @@ public class RoboApplication extends Application implements InjectorProvider {
         List<Module> modules = new ArrayList<Module>();
         Injector injector = getInjector();
 
-        modules.add(new ContextModule(context, customInjectionRegistrationListener, allowPreferenceInjection()));
+        Provider<Context> contextProvider = new ContextProvider(context);
+
+        modules.add(new ContextModule(context, contextProvider, customInjectionRegistrationListener, allowPreferenceInjection()));
         //custom injection looper
-        final Module customInjectionModule = new CustomInjectionModule(customInjectionRegistrationListener);
-        modules.add(customInjectionModule);
 
         // Separate module required for testing eventmanager
-        final Module eventManagerModule = new EventManagerModule(customInjectionRegistrationListener);
+        final Module eventManagerModule = new EventManagerModule(contextProvider, customInjectionRegistrationListener);
         modules.add(eventManagerModule);
-
-        addApplicationModules(modules);
-
+        
         return injector.createChildInjector(modules);
     }
 
@@ -114,9 +105,6 @@ public class RoboApplication extends Application implements InjectorProvider {
 
         customInjectionRegistrationListener = new CustomInjectionRegistrationListener();
 
-        resourceListener = new ResourceListener(this);
-
-
         staticTypeListeners = new ArrayList<StaticTypeListener>();
         //staticTypeListeners.add(resourceListener);
     }
@@ -132,13 +120,16 @@ public class RoboApplication extends Application implements InjectorProvider {
      */
     protected Injector createInjector() {
         final ArrayList<Module> modules = new ArrayList<Module>();
-        final Module roboguiceModule = new RoboModule(resourceListener, viewListenerFactory, extrasListenerFactory, preferenceListenerFactory, this
+        final Module roboguiceModule = new RoboModule( this
         , customInjectionRegistrationListener, allowPreferenceInjection());
         modules.add(roboguiceModule);
 
+        final Module customInjectionModule = new CustomInjectionModule(customInjectionRegistrationListener);
 
+        modules.add(customInjectionModule);
 
-
+        addApplicationModules(modules);
+        
         for (Module m : modules)
             if (m instanceof AbstractAndroidModule)
                 ((AbstractAndroidModule) m).setStaticTypeListeners(staticTypeListeners);

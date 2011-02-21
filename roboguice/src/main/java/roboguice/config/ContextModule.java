@@ -17,9 +17,11 @@ public class ContextModule extends AbstractModule {
     private Context context;
     protected CustomInjectionRegistrationListener customInjectionRegistrationListener;
     protected boolean injectorPreferenceListener;
+    protected Provider<Context> contextProvider;
 
-    public ContextModule(Context context, CustomInjectionRegistrationListener customInjectionRegistrationListener, boolean injectorPreferenceListener) {
+    public ContextModule(Context context, Provider<Context> contextProvider, CustomInjectionRegistrationListener customInjectionRegistrationListener, boolean injectorPreferenceListener) {
         this.context = context;
+        this.contextProvider = contextProvider;
         this.customInjectionRegistrationListener = customInjectionRegistrationListener;
         this.injectorPreferenceListener = injectorPreferenceListener;
     }
@@ -27,31 +29,24 @@ public class ContextModule extends AbstractModule {
     @Override
     protected void configure() {
 
-        Provider<Context> contextProvider = new Provider<Context>() {
-            @Override
-            public Context get() {
-                return context;
-            }
-        };
+
 
         bind(Context.class).toProvider(contextProvider);
         bind(((Class<Context>) context.getClass())).toProvider(contextProvider);
         bind(Activity.class).toProvider(ActivityProvider.class);
 
         customInjectionRegistrationListener.registerMemberInjector(InjectExtra.class,
-               buildDelayedInjecitonFactory(new ExtrasListenerFactory()));
+               buildDelayedInjecitonFactory(new ExtrasListenerFactory(contextProvider)));
         customInjectionRegistrationListener.registerMemberInjector(InjectView.class,
-                buildDelayedInjecitonFactory(new ViewListenerFactory()));
+                buildDelayedInjecitonFactory(new ViewListenerFactory(contextProvider)));
 
         if (injectorPreferenceListener)
             customInjectionRegistrationListener.registerMemberInjector(InjectPreference.class,
-                    buildDelayedInjecitonFactory(new PreferenceListenerFactory()));
+                    buildDelayedInjecitonFactory(new PreferenceListenerFactory(contextProvider)));
     }
 
     private MemberInjectorFactory buildDelayedInjecitonFactory(DelayedInjectionFactory factory){
-        requestInjection(factory);
         DelayedInjectionMemberInjectorFactory delayedInjectionFactory = new DelayedInjectionMemberInjectorFactory(factory);
-        requestInjection(delayedInjectionFactory);
         return delayedInjectionFactory;
     }
 

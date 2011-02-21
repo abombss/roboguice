@@ -32,9 +32,14 @@ import java.util.*;
 @SuppressWarnings({"unchecked"})
 @Singleton
 public class EventManager {
-    @Inject protected Provider<Context> contextProvider;
+    protected Provider<Context> contextProvider;
 
     protected Map<Context, Map<Class<?>, Set<EventListener<?>>>> registrations = new WeakHashMap<Context, Map<Class<?>, Set<EventListener<?>>>>();
+
+
+    public EventManager(Provider<Context> contextProvider) {
+        this.contextProvider = contextProvider;
+    }
 
     public boolean isEnabled() {
         return true;
@@ -226,6 +231,11 @@ public class EventManager {
     }
 
     public static class NullEventManager extends EventManager {
+
+        public NullEventManager(){
+            super(null);
+        }
+
         @Override
         public boolean isEnabled() {
             return false;
